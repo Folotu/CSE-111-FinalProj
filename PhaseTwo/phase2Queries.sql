@@ -76,3 +76,7 @@ FROM Orders, Customer
 WHERE Customer.CustomerID = Orders.CustomerID
 AND Orders.Price > 100
 
+SELECT Seller.Email
+FROM Seller, Checkout
+WHERE Seller.SellerID == Checkout.SellerID
+
