@@ -74,9 +74,9 @@ SELECT * FROM Product;
 SELECT Customer.CustomerID
 FROM Orders, Customer
 WHERE Customer.CustomerID = Orders.CustomerID
-AND Orders.Price > 100
+AND Orders.Price > 100;
 
 SELECT Seller.Email
 FROM Seller, Checkout
-WHERE Seller.SellerID == Checkout.SellerID
+WHERE Seller.SellerID == Checkout.SellerID;
 
