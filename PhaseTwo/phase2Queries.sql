@@ -82,7 +82,7 @@ SELECT Seller.Email
 FROM Seller, Checkout
 WHERE Seller.SellerID == Checkout.SellerID;
 
--- 4.
+-- 4. Get the carts that have items in them
 SELECT c2.CartID 
 FROM Cart c2 JOIN Customer c1
 ON c1.CustomerID = c2.CustomerID
@@ -145,9 +145,27 @@ UPDATE Product
 SET Discount = 0.10
 WHERE ProductID = 1;
 
--- 12. 
+-- 12. Check if a discount exists and if it does, out put that it does or
+-- output that the discount is unavailable. Display results as 
+SELECT *,
+CASE WHEN Discount IS NOT NULL 
+THEN "Discount(s) available for this item"
+ELSE "No discount available for this item"
+END AS DiscountPrice
+FROM Product;
 
--- 13.
+-- 13. Get the sellers who have sold more than 1 product to customers
+SELECT * FROM
+(SELECT s.SellerID FROM Product p 
+JOIN Seller s
+ON p.ProductID = s.ProductID
+JOIN Order_item o1
+ON o1.ProductID = p.ProductID
+JOIN Orders o2
+ON o1.OrderID = o2.OrderID
+JOIN Customer c 
+ON c.CustomerID = o2.CustomerID
+WHERE (s.SellerID) > 1);
 
 -- 14. 
 
