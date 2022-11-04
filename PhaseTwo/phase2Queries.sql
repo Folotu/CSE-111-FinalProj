@@ -68,15 +68,46 @@ CREATE TABLE IF NOT EXISTS Product (
 .import ./CSE-111-InciteDataset/InciteDataset-ProductTable.csv Product
 .import ./CSE-111-InciteDataset/InciteDataset-SellerTable.csv Seller
 
-
+-- 1. Selecting all products
 SELECT * FROM Product;
 
+-- 2.
 SELECT Customer.CustomerID
 FROM Orders, Customer
 WHERE Customer.CustomerID = Orders.CustomerID
 AND Orders.Price > 100;
 
+-- 3.
 SELECT Seller.Email
 FROM Seller, Checkout
 WHERE Seller.SellerID == Checkout.SellerID;
 
+-- 4.
+SELECT c2.CartID 
+FROM Cart c2 JOIN Customer c1
+ON c1.CustomerID = c2.CustomerID
+WHERE Cart_total > 0;
+
+-- 5. Create a new cart
+INSERT INTO CART
+VALUES(3, 1, 3, 20);
+
+-- 6. Update cart 3's total
+UPDATE CART 
+SET Cart_total = 25.47
+WHERE CartID = 3;
+
+-- 7. How many carts is product 1 in
+SELECT COUNT(*) FROM Cart c1
+JOIN Customer c2 
+ON c1.CustomerID = c2.CustomerID
+JOIN Orders o 
+ON c1.OrderID = o.OrderID
+JOIN Order_item oi 
+ON o.OrderID = oi.OrderID
+JOIN Product p 
+ON oi.ProductID = p.ProductID
+WHERE p.ProductID = 1;
+
+-- 8.
+INSERT INTO
