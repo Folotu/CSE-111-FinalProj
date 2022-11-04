@@ -109,5 +109,46 @@ JOIN Product p
 ON oi.ProductID = p.ProductID
 WHERE p.ProductID = 1;
 
--- 8.
-INSERT INTO
+-- 8. How many orders have customer 1 made
+SELECT COUNT(*) as num_orders 
+FROM Cart c1
+JOIN Customer c2 
+ON c1.CustomerID = c2.CustomerID
+JOIN Orders o 
+ON c1.OrderID = o.OrderID
+WHERE c2.CustomerID = 1;
+
+-- 9. How many times has customer 2 ordered product 1
+SELECT COUNT(*) as times_ordered
+FROM Cart c1
+JOIN Customer c2 
+ON c1.CustomerID = c2.CustomerID
+JOIN Orders o 
+ON c1.OrderID = o.OrderID
+JOIN Order_item oi 
+ON o.OrderID = oi.OrderID
+JOIN Product p 
+ON oi.ProductID = p.ProductID
+WHERE p.ProductID = 1 AND c2.CustomerID = 2;
+
+
+-- 10. Get the seller(s) who sell the product: Wine - Ej Gallo Sonoma
+SELECT s.SellerID as seller_id 
+FROM Seller s 
+JOIN Product p on s.ProductID = p.ProductID
+WHERE p.Name = "Wine - Ej Gallo Sonoma";
+
+-- 11. Add discount column to a product and add value of 10%
+ALTER TABLE Product 
+ADD Discount REAL;
+UPDATE Product 
+SET Discount = 0.10
+WHERE ProductID = 1;
+
+-- 12. 
+
+-- 13.
+
+-- 14. 
+
+-- 15. 
