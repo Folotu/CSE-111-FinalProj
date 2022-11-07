@@ -168,5 +168,10 @@ ON c.CustomerID = o2.CustomerID
 WHERE (s.SellerID) > 1);
 
 -- 14. 
+UPDATE Cart
+SET Cart_total = subq1.Price
+FROM (SELECT Orders.Price, Orders.OrderID
+      FROM Orders) AS subq1
+WHERE Cart.OrderID = subq1.OrderID
 
 -- 15. 
