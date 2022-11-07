@@ -174,4 +174,51 @@ FROM (SELECT Orders.Price, Orders.OrderID
       FROM Orders) AS subq1
 WHERE Cart.OrderID = subq1.OrderID
 
--- 15. 
+--15. How many products does each seller sell 
+
+SELECT SellerID, COUNT(ProductID)
+FROM Seller
+GROUP BY SellerID
+
+-- 16. Sellers that sell the same product
+
+SELECT Product.SellerID, Product.Name
+FROM Product, (SELECT ProductID
+				FROM Product
+				GROUP BY ProductID
+				HAVING COUNT(ProductID) > 1) AS sbq1
+WHERE Product.ProductID = sbq1.ProductID;
+
+--17. Out of the sellers that sell the same product, 
+--    select the ones that have the greater stock 
+
+SELECT Product.SellerID, Product.Name, MAX(Product.Stock)
+FROM Product, (SELECT ProductID
+				FROM Product
+				GROUP BY ProductID
+				HAVING COUNT(ProductID) > 1) AS sbq1
+WHERE Product.ProductID = sbq1.ProductID
+GROUP BY Product.Name;
+
+--18. What is the cheapest and most expensive product 
+
+SELECT MIN(Price) AS Price, Name
+FROM Product
+
+UNION ALL
+
+SELECT MAX(Price), Name
+FROM Product
+
+--19. Which products are digital 
+
+SELECT Name
+FROM Product
+WHERE Type = 'TRUE';
+
+
+--20 which products are NOT digital 
+
+SELECT Name
+FROM Product
+WHERE Type = 'FALSE';
