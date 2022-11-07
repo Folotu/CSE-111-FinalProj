@@ -39,14 +39,14 @@ CREATE TABLE IF NOT EXISTS Cart (
 );
 
 CREATE TABLE IF NOT EXISTS Seller (
-    SellerID  INTEGER      PRIMARY KEY,
+    SellerID  INTEGER,
     Email     VARCHAR (50),
     Password  VARCHAR (50),
     ProductID INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS Product (
-    ProductID INTEGER       PRIMARY KEY,
+    ProductID INTEGER,
     SellerID  INTEGER,
     Name      VARCHAR (200),
     Price     REAL,
