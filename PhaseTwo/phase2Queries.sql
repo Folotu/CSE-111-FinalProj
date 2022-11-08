@@ -223,3 +223,13 @@ WHERE Type = 'TRUE';
 SELECT Name
 FROM Product
 WHERE Type = 'FALSE';
+
+--21 For each item that is ordered display seller information and customer information and product purchased 
+SELECT Seller.SellerID AS TheSeller, Seller.Email AS SellersEmail, Customer.CustomerID, Customer.email AS CustomerEmail, Product.Name AS ProductsName, Order_item.OrderItemID, Product.ProductID, Orders.OrderID
+FROM Seller, Product, Customer, Orders, Order_item
+WHERE Seller.SellerID = Product.SellerID
+AND Orders.OrderID = Order_item.OrderID
+AND Orders.CustomerID = Customer.CustomerID
+AND Product.ProductID = Order_item.ProductID
+GROUP BY Order_item.OrderItemID
+
