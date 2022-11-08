@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS Product (
 -- 1. Selecting all products
 SELECT * FROM Product;
 
--- 2.
+-- 2. Find the customers who have orders over 100 in price
 SELECT Customer.CustomerID
 FROM Orders, Customer
 WHERE Customer.CustomerID = Orders.CustomerID
@@ -145,8 +145,9 @@ UPDATE Product
 SET Discount = 0.10
 WHERE ProductID = 1;
 
--- 12. Check if a discount exists and if it does, out put that it does or
--- output that the discount is unavailable. Display results as 
+-- 12. Check if a discount exists for all products, and if a product does have one,
+-- output that it does or output that the discount is unavailable. 
+-- Display the results as DisocuntPrice 
 SELECT *,
 CASE WHEN Discount IS NOT NULL 
 THEN "Discount(s) available for this item"
