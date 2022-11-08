@@ -77,7 +77,7 @@ FROM Orders, Customer
 WHERE Customer.CustomerID = Orders.CustomerID
 AND Orders.Price > 100;
 
--- 3.
+-- 3. Show the seller's emails that their products made it past the checkout menu 
 SELECT Seller.Email
 FROM Seller, Checkout
 WHERE Seller.SellerID == Checkout.SellerID;
@@ -168,7 +168,7 @@ JOIN Customer c
 ON c.CustomerID = o2.CustomerID
 WHERE (s.SellerID) > 1);
 
--- 14. 
+-- 14. update cart total with cumulative price from orders 
 UPDATE Cart
 SET Cart_total = subq1.Price
 FROM (SELECT Orders.Price, Orders.OrderID
