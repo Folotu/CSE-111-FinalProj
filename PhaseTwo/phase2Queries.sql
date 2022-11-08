@@ -233,7 +233,7 @@ AND Orders.CustomerID = Customer.CustomerID
 AND Product.ProductID = Order_item.ProductID
 GROUP BY Order_item.OrderItemID
 
---2. Out of the items ordered, display how many total items were ordered from each seller who has had items purchased
+--22. Out of the items ordered, display how many total items were ordered from each seller who has had items purchased
 SELECT SellerId, SUM(Oder_qty) FROM
 (SELECT * FROM Seller, Product, Customer, Orders, Order_item
 WHERE Seller.SellerID = Product.SellerID
