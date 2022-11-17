@@ -19,7 +19,7 @@ def closeConnection(_conn, _dbFile):
     except Error as e:
         print(e)
 
-def updateProductStock(_conn, productId, newStock):
+def update_product_stock(_conn, productId, newStock):
     cur = _conn.cursor()
     cur.execute(
         f'''
@@ -37,4 +37,20 @@ def updateProductStock(_conn, productId, newStock):
     )
     r = cur.fetchall()
     return r[0][0]
+
+def add_product(_conn, seller, product_name, price, image, type, stock, discount):
+    cur = _conn.cursor()
+    cur.execute(
+        '''
+        SELECT MAX(ProductID) from Product
+        '''
+    )
+    id = cur.fetchall()[0][0] + 1
+    cur.execute(
+        f'''
+        INSERT INTO Product
+        VALUES({id}, {seller}, (:name), {price}, (:image), (:type), {stock}, {discount})
+        ''', {'name': product_name, 'image': image, 'type': type}
+    )
+    return cur.execute(f'SELECT * FROM Product WHERE ProductID = {id}').fetchall()
 
