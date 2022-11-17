@@ -3,7 +3,7 @@ import unittest
 from sqlite3 import Error
 
 from mock_store import (add_product, closeConnection, openConnection,
-                        update_product_stock, remove_product)
+                        update_product_stock, remove_product, product_sort_by)
 
 database = r"test.sqlite"
 
@@ -53,7 +53,13 @@ class TestMockStore(unittest.TestCase):
         with conn:
             r = remove_product(conn, id[0][0])
             assert(r)
-            
+
+    def test_sort_by_popular(self):
+        conn = openConnection(database)
+        expected = [2, 1, 3, 8, 5, 10]
+        sort_by = 'Most Popular'
+        actual = product_sort_by(conn, sort_by)
+        assert(expected == actual)
 
 if __name__ == '__main__':
     unittest.main()

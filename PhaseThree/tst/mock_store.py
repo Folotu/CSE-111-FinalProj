@@ -38,6 +38,17 @@ def update_product_stock(_conn, productId, newStock):
     r = cur.fetchall()
     return r[0][0]
 
+'''
+Adds new product to product table
+:param seller: id of the seller selling added product
+:param product_name: name of the product
+:param price: product's price
+:param image: product's display image
+:param type: product's type (either digital or not)
+:param stock: available stock for new product
+:param discount: discount for product (if available); Nullable attr.
+'''
+#TODO: Add code to prevent duplicates. (Not too severe)
 def add_product(_conn, seller, product_name, price, image, type, stock, discount):
     cur = _conn.cursor()
     cur.execute(
@@ -54,6 +65,10 @@ def add_product(_conn, seller, product_name, price, image, type, stock, discount
     )
     return cur.execute(f'SELECT * FROM Product WHERE ProductID = {id}').fetchall()
 
+'''
+Remove product from product table based on id
+:param id: id of product to be removed
+'''
 # TODO: need to add code to return false if product with provided ID doesn't exist
 # or if a failure occurs
 def remove_product(_conn, id):
@@ -64,7 +79,27 @@ def remove_product(_conn, id):
         WHERE ProductId = {id}
         '''
     )
-     
     return True
 
+'''
+Sorts products by :param sort_by:
+:param sort_by: String which determines what to sort products by
+'''
+#TODO: Add other sorting methods, such as sorting by seller
+def product_sort_by(_conn, sort_by):
+    cur = _conn.cursor()
+    sorted_products = []
+    if sort_by == "Most Popular":
+        cur.execute(
+            f'''
+            SELECT p.ProductID, COUNT(p.ProductID) FROM Order_item oi
+            JOIN Product p on oi.ProductID = p.ProductID
+            GROUP BY p.ProductID
+            ORDER BY COUNT(p.ProductID) DESC
+            '''
+        )
+        results = cur.fetchall()
+        for p in results:
+            sorted_products.append(p[0])
+    return sorted_products
 
