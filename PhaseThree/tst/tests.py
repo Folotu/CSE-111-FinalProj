@@ -3,7 +3,9 @@ import unittest
 from sqlite3 import Error
 
 from mock_store import (add_product, closeConnection, openConnection,
-                        update_product_stock)
+                        update_product_stock, remove_product)
+
+database = r"test.sqlite"
 
 def assert_equals_product(actual, expected):
         assert(actual[0][0]==expected[0])
@@ -16,7 +18,6 @@ def assert_equals_product(actual, expected):
         assert(actual[0][7]==expected[7])
 class TestMockStore(unittest.TestCase):
     def test_update_stock(self):
-        database = r"test.sqlite"
         id = 1
         newStock = 1599
         conn = openConnection(database)
@@ -29,7 +30,7 @@ class TestMockStore(unittest.TestCase):
         closeConnection(conn, database)
     
     def test_add_product(self):
-        database = r"test.sqlite"
+        
         seller = 5
         name = f'''Kingdom Hearts III (Xbox One)'''
         price = 64.99
@@ -42,8 +43,17 @@ class TestMockStore(unittest.TestCase):
             actual = add_product(conn, seller, name, price, image, type, stock, discount)
             expected = (actual[0][0], seller, name, price, image, type, stock, discount)
             assert_equals_product(actual, expected)
+        closeConnection(conn, database)
+
+    def test_remove_product(self):
+        conn = openConnection(database)
+        cur = conn.cursor()
+        cur.execute(f'SELECT MAX(ProductID) FROM Product')
+        id = cur.fetchall()
+        with conn:
+            r = remove_product(conn, id[0][0])
+            assert(r)
             
 
 if __name__ == '__main__':
     unittest.main()
-    

@@ -54,3 +54,14 @@ def add_product(_conn, seller, product_name, price, image, type, stock, discount
     )
     return cur.execute(f'SELECT * FROM Product WHERE ProductID = {id}').fetchall()
 
+def remove_product(_conn, id):
+    cur = _conn.cursor()
+    cur.execute(
+        f'''
+        DELETE FROM Product 
+        WHERE ProductId = {id}
+        '''
+    )
+     # need to add code to return false if product with provided ID doesn't exist
+     # or if a failure occurs
+    return True
