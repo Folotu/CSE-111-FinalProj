@@ -1,8 +1,19 @@
 import sqlite3
-from sqlite3 import Error
-from MockStore import updateProductStock, openConnection, closeConnection
 import unittest
+from sqlite3 import Error
 
+from mock_store import (add_product, closeConnection, openConnection,
+                        update_product_stock)
+
+def assert_equals_product(actual, expected):
+        assert(actual[0][0]==expected[0])
+        assert(actual[0][1]==expected[1])
+        assert(actual[0][2]==expected[2])
+        assert(actual[0][3]==expected[3])
+        assert(actual[0][4]==expected[4])
+        assert(actual[0][5]==expected[5])
+        assert(actual[0][6]==expected[6])
+        assert(actual[0][7]==expected[7])
 class TestMockStore(unittest.TestCase):
     def test_update_stock(self):
         database = r"test.sqlite"
@@ -10,12 +21,29 @@ class TestMockStore(unittest.TestCase):
         newStock = 1599
         conn = openConnection(database)
         with conn:
-            r = updateProductStock(conn, 1, newStock)
+            r = update_product_stock(conn, id, newStock)
             assert(r == newStock)
             newStock = 2
-            r = updateProductStock(conn, 1, newStock)
+            r = update_product_stock(conn, id, newStock)
             assert(r == newStock)
         closeConnection(conn, database)
+    
+    def test_add_product(self):
+        database = r"test.sqlite"
+        seller = 5
+        name = f'''Kingdom Hearts III (Xbox One)'''
+        price = 64.99
+        image = "dummyimage.com"
+        stock = 200
+        type = "TRUE"
+        discount = 0.20
+        conn = openConnection(database)
+        with conn:
+            actual = add_product(conn, seller, name, price, image, type, stock, discount)
+            expected = (actual[0][0], seller, name, price, image, type, stock, discount)
+            assert_equals_product(actual, expected)
+            
 
 if __name__ == '__main__':
     unittest.main()
+    
