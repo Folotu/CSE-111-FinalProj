@@ -39,7 +39,7 @@ def update_product_stock(_conn, productId, newStock):
     return r[0][0]
 
 '''
-Adds new product to product table
+Adds new product to product table and returns the added product from the table
 :param seller: id of the seller selling added product
 :param product_name: name of the product
 :param price: product's price
@@ -48,9 +48,19 @@ Adds new product to product table
 :param stock: available stock for new product
 :param discount: discount for product (if available); Nullable attr.
 '''
-#TODO: Add code to prevent duplicates. (Not too severe)
 def add_product(_conn, seller, product_name, price, image, type, stock, discount):
     cur = _conn.cursor()
+    cur.execute(
+        f'''
+        SELECT * FROM Product 
+        WHERE SellerID = {seller} AND Name = (:name)
+        ''', {'name': product_name}
+    )
+    res = cur.fetchall()
+    # if a product with this name exists under the provided seller, prevent addition to
+    # product table
+    if len(res[0]) > 0:
+        return "Cannot add existing item to listing!"
     cur.execute(
         '''
         SELECT MAX(ProductID) from Product
@@ -66,7 +76,7 @@ def add_product(_conn, seller, product_name, price, image, type, stock, discount
     return cur.execute(f'SELECT * FROM Product WHERE ProductID = {id}').fetchall()
 
 '''
-Remove product from product table based on id
+Remove product from product table based on id. Returns true if successful
 :param id: id of product to be removed
 '''
 # TODO: need to add code to return false if product with provided ID doesn't exist
@@ -82,7 +92,7 @@ def remove_product(_conn, id):
     return True
 
 '''
-Sorts products by :param sort_by:
+Sorts products by :param sort_by: and returns a list of product ids sorted accordingly
 :param sort_by: String which determines what to sort products by
 '''
 #TODO: Add other sorting methods, such as sorting by seller
@@ -91,7 +101,7 @@ def product_sort_by(_conn, sort_by):
     sorted_products = []
     if sort_by == "Most Popular":
         cur.execute(
-            f'''
+            '''
             SELECT p.ProductID, COUNT(p.ProductID) FROM Order_item oi
             JOIN Product p on oi.ProductID = p.ProductID
             GROUP BY p.ProductID
