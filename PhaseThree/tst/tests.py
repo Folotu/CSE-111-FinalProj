@@ -42,8 +42,10 @@ class TestMockStore(unittest.TestCase):
         with conn:
             actual = add_product(conn, seller, name, price, image, type, stock, discount)
             expected = (actual[0][0], seller, name, price, image, type, stock, discount)
-            assert_equals_product(actual, expected)
-        closeConnection(conn, database)
+            if isinstance(actual, str):
+                assert(actual == "Cannot add existing item to listing!")
+            else:
+                assert_equals_product(actual, expected)
 
     def test_remove_product(self):
         conn = openConnection(database)
