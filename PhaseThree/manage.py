@@ -3,7 +3,6 @@
 import os
 import sys
 
-
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ecommerce.settings')
     try:
@@ -19,3 +18,9 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+    # from incite.models import MyAccountManager
+    # superuserNewDB = MyAccountManager()
+
+    # superuserNewDB.create_superuser('admin@admin.com', 'admin', 'admin')
+

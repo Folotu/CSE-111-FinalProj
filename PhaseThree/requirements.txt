@@ -8,5 +8,6 @@ boto3
 django-storages
 gunicorn
 waitress
-django-storages-redux boto
+django-storages-redux 
 django-utils-six
+django-debug-toolbar
