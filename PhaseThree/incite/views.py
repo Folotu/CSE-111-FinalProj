@@ -21,12 +21,6 @@ def store(request):
 	"""
 	TODO - Move this commented block to checkout so stock gets updated
 	"""
-	# for rex in testprod:
-	# 	yeat = 0
-	# 	for leftorders in testorderitems:
-	# 		if (rex.id == leftorders.product_id):
-	# 			yeat = yeat + leftorders.quantity
-	# 	qDict[rex.id] = qDict[rex.id] - yeat
 		
 	products = Product.objects.using('default').all()
 	context = {'products':products, 'cartItems':cartItems, 'howmanyleft':qDict,}
@@ -46,12 +40,14 @@ def cart(request):
 
 def checkout(request):
 	data = cartData(request)
+	print(f"niggas: {data}")
 	
 	cartItems = data['cartItems']
 	order = data['order']
 	items = data['items']
+	total = data['order']['get_cart_total']
 
-	context = {'items':items, 'order':order, 'cartItems':cartItems}
+	context = {'items':items, 'order':order, 'cartItems':cartItems, 'total': total}
 	return render(request, 'store/checkout.html', context)
 
 from django.views.decorators.csrf import csrf_exempt
@@ -107,20 +103,26 @@ def updateItem(request):
 def processOrder(request):
 	transaction_id = datetime.datetime.now().timestamp()
 	data = json.loads(request.body)
+	# actually returns cart total (inefficient implementation)
+	order_data = cartData(request)
 
 	if request.user.is_authenticated:
 		customer = request.user.customer
 		order, created = Order.objects.using('default').get_or_create(customer=customer, complete=False)
 	else:
-		customer, order = guestOrder(request, data)
+		customer, order, total = guestOrder(request, data)
 
-	total = float(data['form']['total'])
+	# total = float(data['form']['total'])
 	order.transaction_id = transaction_id
 
 	# if total == order.get_cart_total:
-	if total == order.get_cart_total:
+	if total == order_data['order']['get_cart_total']:
 		order.complete = True
 	order.save(using='default')
+
+	"""
+	TODO - add code to update stock after successful transaction
+	"""
 
 	# if order.shipping == True:
 	# 	ShippingAddress.objects.using('default').create(

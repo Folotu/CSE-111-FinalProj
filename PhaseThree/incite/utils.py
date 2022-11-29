@@ -1,5 +1,8 @@
 import json
+import uuid
 from .models import *
+
+num_temp_users = 0
 
 def cookieCart(request):
 
@@ -110,18 +113,21 @@ def guestOrder(request, data):
 
 	cookieData = cookieCart(request)
 	items = cookieData['items']
-
+	print(f"sugar {items}")
+	user = User.objects.using('default').get_or_create(email=email, username=f"temp_user_{uuid.uuid4()}", password="abcd1234")
+	actual_user = User.objects.using('default').get(email=email)
 	customer, created = Customer.objects.using('default').get_or_create(
-			email=email,
+			user=actual_user
 			)
 	customer.name = name
+	customer.email = email
 	customer.save()
 	
 	order = Order.objects.using('default').create(
 		customer=customer,
 		complete=False,
 		)
-
+	total = 0
 	for item in items:
 		product = Product.objects.using('default').get(id=item['id'])
 		orderItem = Order_item.objects.using('default').create(
@@ -129,5 +135,6 @@ def guestOrder(request, data):
 			order=order,
 			quantity=item['quantity'],
 		)
-	return customer, order
+		total += (item["product"]["price"]) * (item["quantity"])
+	return customer, order, total
 
