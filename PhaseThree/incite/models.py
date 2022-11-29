@@ -182,13 +182,14 @@ class Cart(models.Model):
 	@property
 	def get_cart_total(self):
 		# orderitems = self.orderitem_set.all()
-		orderitems = self.orderID_set.all()
+		orderitems = Order_item.objects.using('default').filter(order=self.OrderID).all()
 		total = sum([item.get_total for item in orderitems])
 		return total 
 
 	@property
 	def get_cart_items(self):
-		orderitems = self.orderitem_set.all()
+		# orderitems = self.order_item_set.all()
+		orderitems = Order_item.objects.using('default').filter(order=self.OrderID).all()
 		total = sum([item.quantity for item in orderitems])
 		return total 
 

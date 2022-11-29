@@ -49,16 +49,59 @@ def cookieCart(request):
 def cartData(request):
 	if request.user.is_authenticated:
 		customer = request.user.customer
+		# from .views import updateItem
+		# updateItem(request)
+
 		order, created = Order.objects.using('default').get_or_create(customer=customer, complete=False)
-		items = order.orderitem_set.all()
-		cartItems = order.get_cart_items
+		items = Order_item.objects.using('default').filter(order = order).all()
+		carti= Cart.objects.using('default').filter(CustomerID = customer, OrderID = order).all()
+		print(carti)
+		print(Cart.objects.using('default').filter(CustomerID = customer, OrderID = order))
+		
+		cookieData = cookieCart(request)
+		cartItems = cookieData['cartItems']
+		for j in carti:
+
+			cartItems = j.get_cart_items
+
+
+		return {'cartItems':cartItems ,'order':order, 'items':items}
+		# order, created = Order.objects.using('default').get_or_create(customer=customer, complete=False)
+
+		# order_items = Order_item.objects.using('default').filter(order = order).all()
+		# print(order_items)
+		# items = []
+		# {'get_cart_total': len(order_items), 'get_cart_items':0, 'shipping':False}
+		# for j in order_items:
+		# 	print(j.product)
+		# 	items.append(j.product)
+
+		# print(order)
+	
+
+		# items = order.orderitem_set.all()
+		# print(order.OrderID)
+		# print(items)
+		# #orderItem, created = Order_item.objects.using('default').get_or_create(order=order, product=product)
+		# cartItems = order.get_cart_items()
+		# print(order)
+		# # orderItems = 
+		# print(order.orderitem)
+		
+		
+		# print(items)
+		
+		# cartItems = order.get_cart_items()
+		
 	else:
 		cookieData = cookieCart(request)
 		cartItems = cookieData['cartItems']
 		order = cookieData['order']
 		items = cookieData['items']
 
-	return {'cartItems':cartItems ,'order':order, 'items':items}
+		return {'cartItems':cartItems ,'order':order, 'items':items}
+
+	
 
 	
 def guestOrder(request, data):

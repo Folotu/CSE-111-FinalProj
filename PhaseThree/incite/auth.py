@@ -13,25 +13,43 @@ from django.shortcuts import redirect
 
 def login_user(request):
     
-    data = json.loads(request.body)
-
     if request.method == 'POST':
-        #context_instance = RequestContext(request)
-        email = request.form.get('email')
-        password = request.form.get('password')
+        context_instance = RequestContext(request)
+        print(request)
+        print(request)
+        loginData = request.POST
 
-        user = User.query.filter_by(email=email).first()
+        email = loginData['email']
+        password = loginData['password']
+
+        user = User.objects.filter(email=email).first()
         if user:
-            if check_password(user.password, password):
-                messages.success('Logged in successfully!')
-                login(user, remember=True)
-                
-                #return redirect(url_for('views.home'))
+
+            # print(user.check_password(password))
+            #check_password(user.password, password)
+            print(user.password)
+            print(password)
+            if user.password == password:
+                messages.success(request, 'Logged in successfully!')
+                login(request, user)
                 
             else:
-                messages.error('Incorrect password, try again.')
+                messages.error(request, 'Incorrect password, try again.')
         else:
-            messages.error('Email does not exist.')
+            messages.error(request, 'Email does not exist.')
+
+    # elif request.method == 'GET':
+    data = cartData(request)
+
+    cartItems = data['cartItems']
+    order = data['order']
+    items = data['items']
+    context = {'items':items, 'order':order, 'cartItems':cartItems}
+
+    return render(request, 'store/login.html', context)
+
+
+def logout_user(request):
 
     data = cartData(request)
 
@@ -40,16 +58,15 @@ def login_user(request):
     items = data['items']
     context = {'items':items, 'order':order, 'cartItems':cartItems}
 
+    if request.user.is_authenticated:
+        messages.success(request, 'Logged out successfully!')
+        logout(request)
+        return redirect('/login')
+    else:
+        messages.success(request, 'You were never logged in!')
+        return redirect(request, 'store/login.html', context)
 
-    return render(request, 'store/login.html', context)
 
-
-
-    
-
-    
-
-    
 
 
 def sign_up(request):
@@ -67,7 +84,6 @@ def sign_up(request):
 
         user = User.objects.filter(email=email)
         if user:
-            #messages.error(request, 'Email already exists.')
             messages.error(request, 'Email already exists.')
             return redirect('/sign_up')
         elif len(email) < 4:
@@ -83,7 +99,7 @@ def sign_up(request):
             messages.error(request,'Password must be at least 7 characters.')
             return redirect('/sign_up')
         else:
-            new_user = User(email=email, username=username, Firstname = firstname, password=make_password(password1))
+            new_user = User(email=email, username=username, Firstname = firstname, password = password1) #password=make_password(password1))
             new_user.save()
 
             if (CustomerOrSeller == 'Customer'):

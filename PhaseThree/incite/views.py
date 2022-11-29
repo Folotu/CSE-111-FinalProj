@@ -48,33 +48,54 @@ def checkout(request):
 	context = {'items':items, 'order':order, 'cartItems':cartItems}
 	return render(request, 'store/checkout.html', context)
 
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
 def updateItem(request):
-	data = json.loads(request.body)
-	productId = data['productId']
-	action = data['action']
-	print('Action:', action)
-	print('Product:', productId)
+	print(request)
+	print(request.GET)
+	try:
+		data = json.loads(request.body)
+		productId = data['productId']
+		action = data['action']
+		print('Action:', action)
+		print('Product:', productId)
+		
+		customer = request.user.customer
+		product = Product.objects.using('default').get(id=productId)
+		order, created = Order.objects.using('default').get_or_create(customer=customer, complete=False)
 
-	customer = request.user.customer
-	product = Product.objects.using('default').get(id=productId)
-	order, created = Order.objects.using('default').get_or_create(customer=customer, complete=False)
+		orderItem, created = Order_item.objects.using('default').get_or_create(order=order, product=product)
 
-	orderItem, created = Order_item.objects.using('default').get_or_create(order=order, product=product)
+		if action == 'add':
+			orderItem.quantity = (orderItem.quantity + 1)
 
-	if action == 'add':
-		orderItem.quantity = (orderItem.quantity + 1)
-	elif action == 'remove':
-		orderItem.quantity = (orderItem.quantity - 1)
+		elif action == 'remove':
+			orderItem.quantity = (orderItem.quantity - 1)
+			
+		orderItem.save(using='default')
+		
+		if orderItem.quantity <= 0:
+			orderItem.delete()
 
-	orderItem.save(using='default')
+	except: 
 
-	if orderItem.quantity <= 0:
-		orderItem.delete()
+		customer = request.user.customer
+		order, created = Order.objects.using('default').get_or_create(customer=customer, complete=False)
+
+		order_items = Order_item.objects.using('default').filter(order = order).all()
+		print(order_items)
+		items = []
+		{'get_cart_total': len(order_items), 'get_cart_items':0, 'shipping':False}
+		for j in order_items:
+			print(j.product)
+			items.append(j.product)
+
 
 	return JsonResponse('Item was added', safe=False)
 
 
-from django.views.decorators.csrf import csrf_exempt
+
 
 @csrf_exempt
 def processOrder(request):
@@ -90,6 +111,7 @@ def processOrder(request):
 	total = float(data['form']['total'])
 	order.transaction_id = transaction_id
 
+	# if total == order.get_cart_total:
 	if total == order.get_cart_total:
 		order.complete = True
 	order.save(using='default')
