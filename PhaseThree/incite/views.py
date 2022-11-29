@@ -12,18 +12,24 @@ def store(request):
 	order = data['order']
 	items = data['items']
 
-	qauntDict = {}
+	qDict = {}
 	testprod = Product.objects.using('default').all()
+	# Get live stock from DB
+	for p in testprod:
+		qDict[p.id] = p.stock
 	testorderitems = Order_item.objects.using('default').all()
-	for rex in testprod:
-		yeat = 0
-		for leftorders in testorderitems:
-			if (rex.id == leftorders.product_id):
-				yeat = yeat + leftorders.quantity
-		qauntDict[rex.id] = 150 - yeat
+	"""
+	TODO - Move this commented block to checkout so stock gets updated
+	"""
+	# for rex in testprod:
+	# 	yeat = 0
+	# 	for leftorders in testorderitems:
+	# 		if (rex.id == leftorders.product_id):
+	# 			yeat = yeat + leftorders.quantity
+	# 	qDict[rex.id] = qDict[rex.id] - yeat
 		
 	products = Product.objects.using('default').all()
-	context = {'products':products, 'cartItems':cartItems, 'howmanyleft':qauntDict,}
+	context = {'products':products, 'cartItems':cartItems, 'howmanyleft':qDict,}
 	return render(request, 'store/store.html', context)
 
 
