@@ -18,9 +18,6 @@ def store(request):
 	for p in testprod:
 		qDict[p.id] = p.stock
 	testorderitems = Order_item.objects.using('default').all()
-	"""
-	TODO - Move this commented block to checkout so stock gets updated
-	"""
 		
 	products = Product.objects.using('default').all()
 	context = {'products':products, 'cartItems':cartItems, 'howmanyleft':qDict,}
@@ -40,7 +37,6 @@ def cart(request):
 
 def checkout(request):
 	data = cartData(request)
-	print(f"niggas: {data}")
 	
 	cartItems = data['cartItems']
 	order = data['order']
@@ -49,6 +45,12 @@ def checkout(request):
 
 	context = {'items':items, 'order':order, 'cartItems':cartItems, 'total': total}
 	return render(request, 'store/checkout.html', context)
+
+def updateStock(quantity):
+	for id in quantity:
+		p = Product.objects.get(id=id)
+		p.stock = p.stock - quantity[id]
+		p.save()
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -110,19 +112,19 @@ def processOrder(request):
 		customer = request.user.customer
 		order, created = Order.objects.using('default').get_or_create(customer=customer, complete=False)
 	else:
-		customer, order, total = guestOrder(request, data)
+		customer, order, total, quantity = guestOrder(request, data)
 
 	# total = float(data['form']['total'])
 	order.transaction_id = transaction_id
 
 	# if total == order.get_cart_total:
 	if total == order_data['order']['get_cart_total']:
+	# if total == order.get_cart_total:
 		order.complete = True
 	order.save(using='default')
-
-	"""
-	TODO - add code to update stock after successful transaction
-	"""
+	
+	if order.complete:
+		updateStock(quantity)
 
 	# if order.shipping == True:
 	# 	ShippingAddress.objects.using('default').create(

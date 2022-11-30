@@ -128,6 +128,7 @@ def guestOrder(request, data):
 		complete=False,
 		)
 	total = 0
+	purchase_quantity = {}
 	for item in items:
 		product = Product.objects.using('default').get(id=item['id'])
 		orderItem = Order_item.objects.using('default').create(
@@ -135,6 +136,7 @@ def guestOrder(request, data):
 			order=order,
 			quantity=item['quantity'],
 		)
+		purchase_quantity[item['id']] = item['quantity']
 		total += (item["product"]["price"]) * (item["quantity"])
-	return customer, order, total
+	return customer, order, total, purchase_quantity
 
