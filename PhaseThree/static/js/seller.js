@@ -1,8 +1,10 @@
 var sellExist = document.getElementsByClassName('sell-exist')
 document.getElementById('hiddenForImage').value = 0
+document.getElementById('hiddenForEvent').value = "sell";
 for (i = 0; i < sellExist.length; i++) {
 	sellExist[i].addEventListener('click', function(){
         console.log(this.dataset.productdigi)
+        document.getElementById('hiddenForEvent').value = "sell";
 
 		var productId = this.dataset.product
 		var action = this.dataset.action
@@ -32,7 +34,7 @@ for (i = 0; i < sellExist.length; i++) {
 
         document.getElementById('id_stock').value = this.dataset.productstock
 
-        document.getElementbyId('hiddenForEvent').value = "sell"
+        
 
         
 	})
@@ -42,13 +44,14 @@ var resetBtn = document.getElementById('reset0')
 resetBtn.addEventListener('click', function(){
 
     //document.getElementById('id_name').disabled =false
+    document.getElementById('id_name').style = "visibility:visible"
     document.getElementById('id_name').value = ""
     document.getElementById('id_price').value = ""
     document.getElementById('id_image').value = ""
     document.getElementById('id_digital').value = ""
     document.getElementById('id_stock').value = ""
     document.getElementById('hiddenForImage').value = 0
-    document.getElementbyId('hiddenForEvent').value = "sell"
+    document.getElementById('hiddenForEvent').value = "sell";
 
 })
 
