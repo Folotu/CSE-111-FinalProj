@@ -5,6 +5,7 @@ import datetime
 from .models import * 
 from .utils import cookieCart, cartData, guestOrder
 from django.shortcuts import redirect
+from django.contrib import messages
 
 def store(request):
 	data = cartData(request)
