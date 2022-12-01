@@ -159,29 +159,35 @@ def processOrder(request):
 	return JsonResponse('Payment submitted..', safe=False)
 
 
-
 @csrf_exempt
 def sellerHome(request):
 
 	if request.method == 'GET':
-		products = Product.objects.using('default').all()
+		if request.user.is_authenticated:
+			try:
+				products = Product.objects.using('default').all()
 
-		uniqueProdName = []
-		prodbb = []
-		yourProds = []
-		for i in range(len(products)):
-			if products[i].name not in uniqueProdName:
-				uniqueProdName.append(products[i].name)
-				prodbb.append(products[i])
+				uniqueProdName = []
+				prodbb = []
+				yourProds = []
+				for i in range(len(products)):
+					if products[i].name not in uniqueProdName:
+						uniqueProdName.append(products[i].name)
+						prodbb.append(products[i])
 
-		for i in range(len(products)):
-			if products[i].sellerid == request.user.seller:
-				yourProds.append(products[i])
+				for i in range(len(products)):
+					if products[i].sellerid == request.user.seller:
+						yourProds.append(products[i])
 
 
-		context = {'products':prodbb, 'yourProds': yourProds}
+				context = {'products':prodbb, 'yourProds': yourProds}
 
-		return render(request, 'store/seller.html', context)
+				return render(request, 'store/seller.html', context)
+			except:
+				messages.error(request, "You are not a Seller!!")
+				return redirect('/')
+		else:
+			return redirect('/login')
 
 	if request.method == 'POST':
 		
@@ -232,7 +238,7 @@ def sellerHome(request):
 				newProdDigi = False
 
 			newProdStock = newProd['stock']
-			from django.contrib import messages
+			
 			try:
 				newProdSpecSeller = Product.objects.create(sellerid = request.user.seller, 
 										ProductID = newProdIDtobe,
@@ -248,6 +254,7 @@ def sellerHome(request):
 			return redirect('/seller')
 
 		return redirect('/seller')
+
 
 
 
