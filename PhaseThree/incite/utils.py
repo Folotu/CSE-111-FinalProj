@@ -68,7 +68,8 @@ def cartData(request):
 			cartItems = j.get_cart_items
 
 
-		return {'cartItems':cartItems ,'order':order, 'items':items}
+		total = cookieData['order']['get_cart_total']
+		return {'cartItems':cartItems ,'order':order, 'items':items, 'total':total}
 		# order, created = Order.objects.using('default').get_or_create(customer=customer, complete=False)
 
 		# order_items = Order_item.objects.using('default').filter(order = order).all()
@@ -101,8 +102,8 @@ def cartData(request):
 		cartItems = cookieData['cartItems']
 		order = cookieData['order']
 		items = cookieData['items']
-
-		return {'cartItems':cartItems ,'order':order, 'items':items}
+		total = order['get_cart_total']
+		return {'cartItems':cartItems ,'order':order, 'items':items, 'total':total}
 
 	
 

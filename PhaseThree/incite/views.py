@@ -30,19 +30,18 @@ def cart(request):
 	cartItems = data['cartItems']
 	order = data['order']
 	items = data['items']
+	total = data['total']
 
-	context = {'items':items, 'order':order, 'cartItems':cartItems}
+	context = {'items':items, 'order':order, 'cartItems':cartItems, 'total':total}
 	return render(request, 'store/cart.html', context)
 
 
 def checkout(request):
 	data = cartData(request)
-	
 	cartItems = data['cartItems']
 	order = data['order']
 	items = data['items']
-	total = data['order']['get_cart_total']
-
+	total = data['total']
 	context = {'items':items, 'order':order, 'cartItems':cartItems, 'total': total}
 	return render(request, 'store/checkout.html', context)
 
@@ -123,7 +122,6 @@ def processOrder(request):
 	data = json.loads(request.body)
 	# actually returns cart total (inefficient implementation)
 	order_data = cartData(request)
-
 	if request.user.is_authenticated:
 		customer = request.user.customer
 		order, created = Order.objects.using('default').get_or_create(customer=customer, complete=False)
