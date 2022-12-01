@@ -5,6 +5,7 @@ import datetime
 from .models import * 
 from .utils import cookieCart, cartData, guestOrder
 from django.shortcuts import redirect
+from django.contrib import messages
 
 def store(request):
 	data = cartData(request)
@@ -153,32 +154,40 @@ def processOrder(request):
 	return JsonResponse('Payment submitted..', safe=False)
 
 
-
 @csrf_exempt
 def sellerHome(request):
 
 	if request.method == 'GET':
-		products = Product.objects.using('default').all()
+		if request.user.is_authenticated:
+			try:
+				products = Product.objects.using('default').all()
 
-		uniqueProdName = []
-		prodbb = []
-		yourProds = []
-		for i in range(len(products)):
-			if products[i].name not in uniqueProdName:
-				uniqueProdName.append(products[i].name)
-				prodbb.append(products[i])
+				uniqueProdName = []
+				prodbb = []
+				yourProds = []
+				for i in range(len(products)):
+					if products[i].name not in uniqueProdName:
+						uniqueProdName.append(products[i].name)
+						prodbb.append(products[i])
 
-		for i in range(len(products)):
-			if products[i].sellerid == request.user.seller:
-				yourProds.append(products[i])
+				for i in range(len(products)):
+					if products[i].sellerid == request.user.seller:
+						yourProds.append(products[i])
 
 
-		context = {'products':prodbb, 'yourProds': yourProds}
+				context = {'products':prodbb, 'yourProds': yourProds}
 
-		return render(request, 'store/seller.html', context)
+				return render(request, 'store/seller.html', context)
+			except:
+				messages.error(request, "You are not a Seller!!")
+				return redirect('/')
+		else:
+			return redirect('/login')
 
 	if request.method == 'POST':
+		
 		products = Product.objects.using('default').all()
+
 		print(request.POST['EVENT'])
 		if request.POST['EVENT'] == "remove":
 			req = request.POST
@@ -196,7 +205,6 @@ def sellerHome(request):
 			for j in newProd:
 				print(j)
 			newProdname = newProd['name']
-			
 
 			maxID = 0
 			for i in range(len(products)):
@@ -210,9 +218,9 @@ def sellerHome(request):
 
 			newProdimage = ""
 
-			if request.POST['fixIm'] == 0:
+			try:
 				newProdimage = request.FILES['image']
-			else:
+			except:
 				newProdim = Product.objects.filter(name=newProdname).all()
 				for j in newProdim:
 					newProdimage = j.image
@@ -225,23 +233,23 @@ def sellerHome(request):
 				newProdDigi = False
 
 			newProdStock = newProd['stock']
-
-			# newProdSpecSeller = Product(sellerid = request.user.seller, 
-			# 							ProductID = newProdIDtobe,
-			# 							name = newProdname, price = newProdprice, 
-			# 							image = newProdimage, digital = newProdDigi,
-			# 							stock = newProdStock)
-
-
-			newProdSpecSeller = Product.objects.create(sellerid = request.user.seller, 
+			
+			try:
+				newProdSpecSeller = Product.objects.create(sellerid = request.user.seller, 
 										ProductID = newProdIDtobe,
 										name = newProdname, price = newProdprice, 
 										image = newProdimage, digital = newProdDigi,
 										stock = newProdStock)
+			except:
+				messages.error(request, "You already sell this Item")
+				return redirect('seller')
 
 			newProdSpecSeller.save()
 
 			return redirect('/seller')
+
+		return redirect('/seller')
+
 
 
 

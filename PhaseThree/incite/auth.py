@@ -34,8 +34,12 @@ def login_user(request):
                 messages.success(request, 'Logged in successfully!')
 
                 login(request, user)
-                if user.seller:
-                    return redirect('/seller')
+                try: 
+                    if user.seller:
+                        return redirect('/seller')
+                except:
+                    if user.customer:
+                        return redirect('/')
 
             else:
                 messages.error(request, 'Incorrect password, try again.')
