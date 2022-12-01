@@ -19,12 +19,6 @@ def store(request):
 	for p in testprod:
 		qDict[p.id] = p.stock
 	testorderitems = Order_item.objects.using('default').all()
-	for rex in testprod:
-		yeat = 0
-		for leftorders in testorderitems:
-			if (rex.id == leftorders.product_id):
-				yeat = yeat + leftorders.quantity
-		qauntDict[rex.id] = 150 - yeat
 		
 	products = Product.objects.using('default').all()
 	context = {'products':products, 'cartItems':cartItems, 'howmanyleft':qDict,}

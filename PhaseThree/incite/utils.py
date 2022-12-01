@@ -1,4 +1,5 @@
 import json
+import uuid
 from .models import *
 
 def cookieCart(request):
