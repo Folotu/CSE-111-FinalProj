@@ -10,7 +10,6 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth import authenticate, login, logout
 from django.template import RequestContext
 from django.shortcuts import redirect
-from .views import sellerHome
 
 def login_user(request):
     
@@ -32,11 +31,8 @@ def login_user(request):
             print(password)
             if user.password == password:
                 messages.success(request, 'Logged in successfully!')
-
                 login(request, user)
-                if user.seller:
-                    return redirect('/seller')
-
+                
             else:
                 messages.error(request, 'Incorrect password, try again.')
         else:
@@ -113,10 +109,6 @@ def sign_up(request):
             elif (CustomerOrSeller == 'Seller'):
                 new_seller = Seller(user=new_user)
                 new_seller.save()
-                login(request, new_user)
-                messages.success(request, 'Account created!')
-                return redirect('/seller')
-
 
             login(request, new_user)
             messages.success(request, 'Account created!')
