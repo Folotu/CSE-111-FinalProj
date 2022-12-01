@@ -46,11 +46,27 @@ def checkout(request):
 	context = {'items':items, 'order':order, 'cartItems':cartItems, 'total': total}
 	return render(request, 'store/checkout.html', context)
 
+"""
+Updates stock of a product after a purchase is made
+:param quantity: a map of products being purchased and the quantity of the products purchased
+"""
 def updateStock(quantity):
 	for id in quantity:
 		p = Product.objects.get(id=id)
 		p.stock = p.stock - quantity[id]
 		p.save()
+
+"""
+Drops temp user and customer from database after a guest order is filled
+:param customer: The customer (Customer db model) to delete from database. Customer also contains the user to delete.
+"""
+def drop_temp_user(customer):
+	tCustomer = Customer.objects.get(CustomerID=customer.CustomerID)
+	tUser = tCustomer.user
+	instance = tCustomer
+	instance.delete()
+	instance = tUser
+	instance.delete()
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -125,6 +141,7 @@ def processOrder(request):
 	
 	if order.complete:
 		updateStock(quantity)
+		drop_temp_user(customer)
 
 	# if order.shipping == True:
 	# 	ShippingAddress.objects.using('default').create(
