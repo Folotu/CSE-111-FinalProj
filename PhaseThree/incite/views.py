@@ -13,8 +13,11 @@ def store(request):
 	order = data['order']
 	items = data['items']
 
-	qauntDict = {}
+	qDict = {}
 	testprod = Product.objects.using('default').all()
+	# Get live stock from DB
+	for p in testprod:
+		qDict[p.id] = p.stock
 	testorderitems = Order_item.objects.using('default').all()
 	for rex in testprod:
 		yeat = 0
@@ -24,7 +27,7 @@ def store(request):
 		qauntDict[rex.id] = 150 - yeat
 		
 	products = Product.objects.using('default').all()
-	context = {'products':products, 'cartItems':cartItems, 'howmanyleft':qauntDict,}
+	context = {'products':products, 'cartItems':cartItems, 'howmanyleft':qDict,}
 	return render(request, 'store/store.html', context)
 
 
@@ -34,8 +37,9 @@ def cart(request):
 	cartItems = data['cartItems']
 	order = data['order']
 	items = data['items']
+	total = data['total']
 
-	context = {'items':items, 'order':order, 'cartItems':cartItems}
+	context = {'items':items, 'order':order, 'cartItems':cartItems, 'total':total}
 	return render(request, 'store/cart.html', context)
 
 
@@ -45,9 +49,31 @@ def checkout(request):
 	cartItems = data['cartItems']
 	order = data['order']
 	items = data['items']
-
-	context = {'items':items, 'order':order, 'cartItems':cartItems}
+	total = data['total']
+	context = {'items':items, 'order':order, 'cartItems':cartItems, 'total': total}
 	return render(request, 'store/checkout.html', context)
+
+"""
+Updates stock of a product after a purchase is made
+:param quantity: a map of products being purchased and the quantity of the products purchased
+"""
+def updateStock(quantity):
+	for id in quantity:
+		p = Product.objects.get(id=id)
+		p.stock = p.stock - quantity[id]
+		p.save()
+
+"""
+Drops temp user and customer from database after a guest order is filled
+:param customer: The customer (Customer db model) to delete from database. Customer also contains the user to delete.
+"""
+def drop_temp_user(customer):
+	tCustomer = Customer.objects.get(CustomerID=customer.CustomerID)
+	tUser = tCustomer.user
+	instance = tCustomer
+	instance.delete()
+	instance = tUser
+	instance.delete()
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -99,20 +125,26 @@ def updateItem(request):
 def processOrder(request):
 	transaction_id = datetime.datetime.now().timestamp()
 	data = json.loads(request.body)
-
+	# actually returns cart total (inefficient implementation)
+	order_data = cartData(request)
 	if request.user.is_authenticated:
 		customer = request.user.customer
 		order, created = Order.objects.using('default').get_or_create(customer=customer, complete=False)
 	else:
-		customer, order = guestOrder(request, data)
+		customer, order, total, quantity = guestOrder(request, data)
 
-	total = float(data['form']['total'])
+	# total = float(data['form']['total'])
 	order.transaction_id = transaction_id
 
 	# if total == order.get_cart_total:
-	if total == order.get_cart_total:
+	if total == order_data['order']['get_cart_total']:
+	# if total == order.get_cart_total:
 		order.complete = True
 	order.save(using='default')
+	
+	if order.complete:
+		updateStock(quantity)
+		drop_temp_user(customer)
 
 	# if order.shipping == True:
 	# 	ShippingAddress.objects.using('default').create(
