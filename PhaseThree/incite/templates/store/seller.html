@@ -1,0 +1,157 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+
+    <h3> Welcome {{ request.user.username }} </h3>
+    <br>
+
+    <h6> Your products </h6>
+
+    <div class="row"> 
+		{% for product in yourProds %}
+		<div class="col-lg-4">
+			<img class="thumbnail" src="{{product.imageURL}}">
+			<div class="box-element product">
+
+				<h6><strong>{{product.name}}</strong></h6>
+		
+				<hr>
+                             
+				<button class="btn btn-outline-success remove-yourprods"  
+                                data-product="{{product.ProductID}}"
+                                data-sellerid="{{product.sellerid_id}}"
+                                type="submit" >remove </button>
+                    
+
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+
+    <br></br>
+
+    <h6> Add an EXISTING product to sell </h6>
+
+    <div class="row"> 
+		{% for product in products %}
+		<div class="col-lg-4">
+			<img class="thumbnail" src="{{product.imageURL}}">
+			<div class="box-element product">
+
+				<h6><strong>{{product.name}}</strong></h6>
+		
+				<hr>
+				<button class="btn btn-outline-success sell-exist" data-action="" 
+                data-productNam="{{product.name}}"
+                 data-product="{{product.ProductID}}"  
+                data-productPrice ="{{product.price}}"
+                data-productImage = "{{product.image}}"
+                data-productDigi = "{{product.digital}}"
+                data-productStock = "{{product.stock}}"
+            
+                >Sell
+                </button>
+
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+
+
+
+    <br></br>
+
+    <h6> Add a NEW product to sell </h6>
+
+    <div id="content-main">
+        <form enctype="multipart/form-data" method="post" id="product_form" novalidate=""><input type="hidden" name="csrfmiddlewaretoken" value="G6q0eDh5OJVSMh6kosfPqjDegYD5SvYbvUqSvsz1bwRbjedpEKGAQGhyEBuSnQ8i">
+        <div>
+          <fieldset class="module aligned ">                
+                <div class="form-row field-name">
+                        <div>
+                                <label class="required" for="id_name">Name:</label>
+                                
+                                <input type="text" name="name" class="vTextField" maxlength="200" required="" id="id_name">
+                            
+                        </div>
+                    
+                </div>
+            
+                <div class="form-row field-price">
+                        <div>
+                            <label class="required" for="id_price">Price:</label>
+                                
+                            <input type="number" name="price" step="any" required="" id="id_price">
+                        </div>
+                    
+                </div>
+            
+                <div class="form-row field-image">
+                        <div>
+                            <label for="id_image">Image:</label>
+                                
+                            <input type="file" name="image" accept="image/*" id="id_image">
+                            
+                            
+                        </div>
+                </div>
+
+                <div class="form-row field-digital">
+                        <div>
+                                <label for="id_digital">Digital:</label>
+                                
+                                <select name="digital" id="id_digital">
+                                    <option value="unknown">Unknown</option>
+                                
+                                    <option value="true">Yes</option>
+                                
+                                    <option value="false" selected="">No</option>
+        
+                                </select>  
+                        </div>  
+                </div>
+            
+                <div class="form-row field-stock">
+                        <div>
+                            <label class="required" for="id_stock">Stock:</label>
+                                
+                            <input type="number" name="stock" class="vIntegerField" required="" id="id_stock">
+                            
+                        </div>   
+                </div>
+                
+        </fieldset>
+        
+        <div class="submit-row">
+        
+        <input type="submit" value="Save" id="forRem" class="default" name="_save">
+        
+        
+        <input type="submit" value="Save and add another" name="_addanother">
+        
+        <button type="button" id="reset0" >Reset ALL </button>
+
+        <input type="text" maxlength="2000" style=display:none required="" id="hiddenForImage" name = "fixIm">
+        <input type="text" maxlength="2000" style=display:none required="" id="hiddenForEvent" name = "EVENT">
+
+        <input type="text" maxlength="2000" style=display:none required="" id="whatProdIDtoRem" name = "whatProdIDtoRem">
+        
+        <input type="text" maxlength="2000" style=display:none required="" id="whatSellerProdRem" name = "whatSellerProdRem">
+
+        </div>
+        
+            <script id="django-admin-form-add-constants" src="/static/admin/js/change_form.js" data-model-name="product" async="">
+            </script>
+        
+        
+        <script id="django-admin-prepopulated-fields-constants" src="/static/admin/js/prepopulate_init.js" data-prepopulated-fields="[]">
+        </script>
+        
+        </div>
+        </form></div>
+
+
+
+
+
+{% endblock content %}
