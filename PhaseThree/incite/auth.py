@@ -59,23 +59,21 @@ def login_user(request):
 
 def logout_user(request):
 
-    data = cartData(request)
-
-    cartItems = data['cartItems']
-    order = data['order']
-    items = data['items']
-    context = {'items':items, 'order':order, 'cartItems':cartItems}
-
     if request.user.is_authenticated:
         messages.success(request, 'Logged out successfully!')
         logout(request)
         return redirect('/login')
     else:
+        data = cartData(request)
+
+        cartItems = data['cartItems']
+        order = data['order']
+        items = data['items']
+        context = {'items':items, 'order':order, 'cartItems':cartItems}
+
         messages.success(request, 'You were never logged in!')
         return redirect(request, 'store/login.html', context)
-
-
-
+    
 
 def sign_up(request):
 

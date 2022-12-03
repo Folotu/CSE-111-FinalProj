@@ -197,6 +197,50 @@ def sellerHome(request):
 			Product.objects.filter(ProductID = prodID, sellerid = sellerID).delete()
 
 			return redirect('/seller')
+
+		if request.POST['EVENT'] == "edit":
+			reqedit = request.POST
+			prodname = reqedit['name']
+			prodprice = reqedit['price']
+
+			try:
+				prodimage = request.FILES['image']
+			except:
+				prodim = Product.objects.filter(name=prodname).all()
+				for j in prodim:
+					prodimage = j.image
+
+			try: 
+				prodDigi = reqedit['digital']
+
+			except:
+				messages.error(request, "Unable to update item, you might have forgot to set digital option")
+				return redirect('/seller')
+
+			if prodDigi == 'Yes':
+				prodDigi = True
+			else:
+				prodDigi = False
+
+			prodStock = reqedit['stock']
+
+			prodID = reqedit['whatProdIDtoRem']
+			sellerID = reqedit['whatSellerProdRem']
+
+			try:
+				ProdSpecSeller = Product.objects.filter(ProductID = prodID, 
+													sellerid = sellerID).update(
+													name =  prodname, 
+													price = prodprice,
+													image = prodimage,  
+													digital = prodDigi, 
+													stock = prodStock)
+	
+
+			except:
+				messages.error(request, "Unable to update item")
+
+			return redirect('/seller')
 		
 		
 		if request.POST['EVENT'] == "sell":

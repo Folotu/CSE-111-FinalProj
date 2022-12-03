@@ -14,6 +14,7 @@
 			<div class="box-element product">
 
 				<h6><strong>{{product.name}}</strong></h6>
+                                <p style="color:red;"><strong>{{product.stock}} Left!!</strong></p>
 		
 				<hr>
                              
@@ -21,6 +22,18 @@
                                 data-product="{{product.ProductID}}"
                                 data-sellerid="{{product.sellerid_id}}"
                                 type="submit" >remove </button>
+
+                                <button class="btn btn-outline-success edit-yourprods"  
+                                data-sellerid="{{product.sellerid_id}}"
+                                
+                                data-productNam="{{product.name}}"
+                                data-product="{{product.ProductID}}"  
+                                data-productPrice ="{{product.price}}"
+                                data-productImage = "{{product.image}}"
+                                data-productDigi = "{{product.digital}}"
+                                data-productStock = "{{product.stock}}"
+
+                                type="submit" >edit </button>
                     
 
 			</div>
@@ -39,6 +52,7 @@
 			<div class="box-element product">
 
 				<h6><strong>{{product.name}}</strong></h6>
+                                <p style="color:red;"><strong>{{product.stock}} Left!!</strong></p>
 		
 				<hr>
 				<button class="btn btn-outline-success sell-exist" data-action="" 
@@ -61,7 +75,8 @@
 
     <br></br>
 
-    <h6> Add a NEW product to sell </h6>
+    <h6 id="lastpart" > Add a NEW product to sell </h6>
+    
 
     <div id="content-main">
         <form enctype="multipart/form-data" method="post" id="product_form" novalidate=""><input type="hidden" name="csrfmiddlewaretoken" value="G6q0eDh5OJVSMh6kosfPqjDegYD5SvYbvUqSvsz1bwRbjedpEKGAQGhyEBuSnQ8i">
