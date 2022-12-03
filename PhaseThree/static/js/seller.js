@@ -64,6 +64,7 @@ for (i = 0; i < rem.length; i++) {
     
         document.getElementById('whatProdIDtoRem').value = this.dataset.product
         document.getElementById('whatSellerProdRem').value = this.dataset.sellerid
+        //document.getElementById("mycolour").style.color = ""
         document.getElementById('hiddenForEvent').value = "remove";
         console.log(this.dataset.sellerid)
         document.getElementById('forRem').click()
@@ -75,7 +76,8 @@ var eddi = document.getElementsByClassName('edit-yourprods')
 
 for (i = 0; i < eddi.length; i++) {
     eddi[i].addEventListener('click', function(){
-        document.getElementById("lastpart").innerHTML = "Edit EXISITNG product to sell"
+        document.getElementById("lastpart").innerHTML = "Edit <span id='mycolour'>EXISITNG</span> product to sell"
+        document.getElementById("mycolour").style.color = "red"
         
         document.getElementById('whatProdIDtoRem').value = this.dataset.product
         document.getElementById('whatSellerProdRem').value = this.dataset.sellerid
