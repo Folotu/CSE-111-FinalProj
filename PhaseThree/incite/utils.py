@@ -1,6 +1,8 @@
 import json
 import uuid
 from .models import *
+from django.contrib import messages
+from django.shortcuts import redirect
 
 def cookieCart(request):
 
@@ -19,7 +21,7 @@ def cookieCart(request):
 		#We use try block to prevent items in cart that may have been removed from causing error
 		try:
 			cartItems += cart[i]['quantity']
-
+		
 			product = Product.objects.using('default').get(id=i)
 			total = (product.price * cart[i]['quantity'])
 
@@ -45,29 +47,35 @@ def cookieCart(request):
 		except:
 			pass
 			
+	#print(f'this is caertitems{cartItems} \nthis is order{order} \nthis itmes {items}')
 	return {'cartItems':cartItems ,'order':order, 'items':items}
 
 def cartData(request):
 	if request.user.is_authenticated:
-		customer = request.user.customer
-		# from .views import updateItem
-		# updateItem(request)
+		try: 
+			customer = request.user.customer
+			print("authenticastd guy")
+			order, created = Order.objects.using('default').get_or_create(customer=customer, complete=False)
+			items = Order_item.objects.using('default').filter(order = order).all()
 
-		order, created = Order.objects.using('default').get_or_create(customer=customer, complete=False)
-		items = Order_item.objects.using('default').filter(order = order).all()
-		carti= Cart.objects.using('default').filter(CustomerID = customer, OrderID = order).all()
-		print(carti)
-		print(Cart.objects.using('default').filter(CustomerID = customer, OrderID = order))
-		
-		cookieData = cookieCart(request)
-		cartItems = cookieData['cartItems']
-		for j in carti:
+			# carti= Cart.objects.using('default').filter(CustomerID = customer, OrderID = order).all()
+			carti = Cart.objects.using('default').get_or_create(CustomerID=customer, OrderID = order)
+			print(Cart.objects.using('default').filter(CustomerID = customer, OrderID = order))
+			
+			cookieData = cookieCart(request)
 
-			cartItems = j.get_cart_items
+			cartItems = cookieData['cartItems']
 
+			for i in range(len(carti) -1):
+				#return quantity combined
+				cartItems = carti[i].get_cart_items 
 
-		total = cookieData['order']['get_cart_total']
-		return {'cartItems':cartItems ,'order':order, 'items':items, 'total':total}
+				total = carti[i].get_cart_total
+
+			return {'cartItems':cartItems ,'order':order, 'items':items, 'total':total}
+		except:
+			messages.error(request, "You are not a buyer!!")
+			return redirect('/')
 		# order, created = Order.objects.using('default').get_or_create(customer=customer, complete=False)
 
 		# order_items = Order_item.objects.using('default').filter(order = order).all()
@@ -98,6 +106,7 @@ def cartData(request):
 	else:
 		cookieData = cookieCart(request)
 		cartItems = cookieData['cartItems']
+		
 		order = cookieData['order']
 		items = cookieData['items']
 		total = order['get_cart_total']

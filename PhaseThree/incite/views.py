@@ -3,7 +3,7 @@ from django.http import JsonResponse
 import json
 import datetime
 from .models import * 
-from .utils import cookieCart, cartData, guestOrder
+from .utils import cartData, guestOrder, cookieCart
 from django.shortcuts import redirect
 from django.contrib import messages
 
@@ -124,7 +124,47 @@ def processOrder(request):
 	order_data = cartData(request)
 	if request.user.is_authenticated:
 		customer = request.user.customer
+
 		order, created = Order.objects.using('default').get_or_create(customer=customer, complete=False)
+
+		tot = Cart.objects.using('default').get_or_create(CustomerID=customer, OrderID = order)
+
+		items = Order_item.objects.using('default').filter(order = order).all()
+
+		for i in items:
+			print(i)
+		print('\n')
+		for j in order_data['items']:
+			print(j)
+
+		for i in range(len(tot) -1):
+			total = tot[i].get_cart_total
+			
+		
+		Cusaddr = json.loads(request.body)
+		Cusaddr = Cusaddr['shipping']
+		Customer.objects.using('default').filter(CustomerID=customer.CustomerID).update(ship_addr = str(Cusaddr['address']) + " " + str(Cusaddr['city']) +
+																						" " + str(Cusaddr['state']) + " " + str(Cusaddr['zipcode']))
+
+		order_Data_qaunt = {}
+		order_Data = order_data['items']
+		order_data_total = 0
+		for i in range(len(order_Data)):
+			order_data_total += order_Data[i].get_total
+			order_Data_qaunt[order_Data[i].product.id] = order_Data[i].quantity
+
+		quantity = order_Data_qaunt
+		print(total)
+		print(order_data_total)
+
+		if total == order_data_total:
+			order.complete = True
+		order.save(using='default')
+
+
+		
+
+
 	else:
 		customer, order, total, quantity = guestOrder(request, data)
 
@@ -132,14 +172,14 @@ def processOrder(request):
 	order.transaction_id = transaction_id
 
 	# if total == order.get_cart_total:
-	if total == order_data['order']['get_cart_total']:
+	# if total == order_data_total:
 	# if total == order.get_cart_total:
-		order.complete = True
-	order.save(using='default')
+	# 	order.complete = True
+	# order.save(using='default')
 	
 	if order.complete:
 		updateStock(quantity)
-		drop_temp_user(customer)
+		#drop_temp_user(customer)
 
 	# if order.shipping == True:
 	# 	ShippingAddress.objects.using('default').create(

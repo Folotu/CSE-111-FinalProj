@@ -134,7 +134,7 @@ class Order(models.Model):
 	@property
 	def shipping(self):
 		shipping = False
-		orderitems = self.orderitem_set.all()
+		orderitems = Order_item.objects.using('default').filter(order=self.OrderID).all()
 		for i in orderitems:
 			if i.product.digital == False:
 				shipping = True

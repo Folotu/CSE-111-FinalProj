@@ -3,7 +3,7 @@ from django.http import JsonResponse
 import json
 import datetime
 from .models import * 
-from .utils import cookieCart, cartData, guestOrder
+from .utils import cartData, guestOrder
 from .utils import cartData
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
