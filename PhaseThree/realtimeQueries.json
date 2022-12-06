@@ -1,6 +1,18 @@
 [
     {
-        "sql": "SELECT \"incite_product\".\"id\", \"incite_product\".\"ProductID\", \"incite_product\".\"sellerid_id\", \"incite_product\".\"name\", \"incite_product\".\"price\", \"incite_product\".\"image\", \"incite_product\".\"digital\", \"incite_product\".\"stock\" FROM \"incite_product\"",
+        "sql": "SELECT \"incite_product\".\"id\", \"incite_product\".\"ProductID\", \"incite_product\".\"sellerid_id\", \"incite_product\".\"name\", \"incite_product\".\"price\", \"incite_product\".\"image\", \"incite_product\".\"digital\", \"incite_product\".\"stock\" FROM \"incite_product\" WHERE (\"incite_product\".\"ProductID\" = 9 AND \"incite_product\".\"sellerid_id\" = 1)",
+        "time": "0.000"
+    },
+    {
+        "sql": "BEGIN",
+        "time": "0.000"
+    },
+    {
+        "sql": "DELETE FROM \"incite_order_item\" WHERE \"incite_order_item\".\"product_id\" IN (20)",
+        "time": "0.000"
+    },
+    {
+        "sql": "DELETE FROM \"incite_product\" WHERE \"incite_product\".\"id\" IN (20)",
         "time": "0.000"
     }
 ]

@@ -226,8 +226,7 @@ def sellerHome(request):
 
 
 				context = {'products':prodbb, 'yourProds': yourProds}
-				writeSQLJson2file(connection.queries)
-				print("writtenQuery2File")
+				
 				return render(request, 'store/seller.html', context)
 			except:
 				messages.error(request, "You are not a Seller!!")
@@ -349,8 +348,6 @@ def sellerHome(request):
 			print("writtenQuery2File")
 			return redirect('/seller')
 
-		writeSQLJson2file(connection.queries)
-		print("writtenQuery2File")
 		return redirect('/seller')
 
 
