@@ -32,3 +32,4 @@ PhaseThree/routers/__pycache__/db_routers.cpython-39.pyc
 *.sql
 *.pyc
 *.pyc
+*.sqlite3
