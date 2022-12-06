@@ -6,6 +6,8 @@ from .models import *
 from .utils import cartData, guestOrder, cookieCart
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.db import connection
+from .seeSQLRealtimeQueries import writeSQLJson2file
 
 def store(request):
 	data = cartData(request)
@@ -23,6 +25,8 @@ def store(request):
 		
 	products = Product.objects.using('default').all()
 	context = {'products':products, 'cartItems':cartItems, 'howmanyleft':qDict,}
+	writeSQLJson2file(connection.queries)
+	print("writtenQuery2File")
 	return render(request, 'store/store.html', context)
 
 
@@ -35,6 +39,8 @@ def cart(request):
 	total = data['total']
 
 	context = {'items':items, 'order':order, 'cartItems':cartItems, 'total':total}
+	writeSQLJson2file(connection.queries)
+	print("writtenQuery2File")
 	return render(request, 'store/cart.html', context)
 
 
@@ -46,6 +52,8 @@ def checkout(request):
 	items = data['items']
 	total = data['total']
 	context = {'items':items, 'order':order, 'cartItems':cartItems, 'total': total}
+	writeSQLJson2file(connection.queries)
+	print("writtenQuery2File")
 	return render(request, 'store/checkout.html', context)
 
 """
@@ -57,7 +65,8 @@ def updateStock(quantity):
 		p = Product.objects.get(id=id)
 		p.stock = p.stock - quantity[id]
 		p.save()
-
+	writeSQLJson2file(connection.queries)
+	print("writtenQuery2File")
 """
 Drops temp user and customer from database after a guest order is filled
 :param customer: The customer (Customer db model) to delete from database. Customer also contains the user to delete.
@@ -69,6 +78,8 @@ def drop_temp_user(customer):
 	instance.delete()
 	instance = tUser
 	instance.delete()
+	writeSQLJson2file(connection.queries)
+	print("writtenQuery2File")
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -112,7 +123,8 @@ def updateItem(request):
 		for j in order_items:
 			print(j.product)
 			items.append(j.product)
-
+	writeSQLJson2file(connection.queries)
+	print("writtenQuery2File")
 
 	return JsonResponse('Item was added', safe=False)
 
@@ -161,10 +173,6 @@ def processOrder(request):
 			order.complete = True
 		order.save(using='default')
 
-
-		
-
-
 	else:
 		customer, order, total, quantity = guestOrder(request, data)
 
@@ -191,6 +199,8 @@ def processOrder(request):
 	# 	zipcode=data['shipping']['zipcode'],
 	# 	)
 
+	writeSQLJson2file(connection.queries)
+	print("writtenQuery2File")
 	return JsonResponse('Payment submitted..', safe=False)
 
 
@@ -216,7 +226,8 @@ def sellerHome(request):
 
 
 				context = {'products':prodbb, 'yourProds': yourProds}
-
+				writeSQLJson2file(connection.queries)
+				print("writtenQuery2File")
 				return render(request, 'store/seller.html', context)
 			except:
 				messages.error(request, "You are not a Seller!!")
@@ -236,6 +247,8 @@ def sellerHome(request):
 
 			Product.objects.filter(ProductID = prodID, sellerid = sellerID).delete()
 
+			writeSQLJson2file(connection.queries)
+			print("writtenQuery2File")
 			return redirect('/seller')
 
 		if request.POST['EVENT'] == "edit":
@@ -279,7 +292,9 @@ def sellerHome(request):
 
 			except:
 				messages.error(request, "Unable to update item")
-
+			
+			writeSQLJson2file(connection.queries)
+			print("writtenQuery2File")
 			return redirect('/seller')
 		
 		
@@ -330,8 +345,12 @@ def sellerHome(request):
 
 			newProdSpecSeller.save()
 
+			writeSQLJson2file(connection.queries)
+			print("writtenQuery2File")
 			return redirect('/seller')
 
+		writeSQLJson2file(connection.queries)
+		print("writtenQuery2File")
 		return redirect('/seller')
 
 
